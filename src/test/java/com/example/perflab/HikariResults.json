@@ -1,0 +1,185 @@
+{
+  "name": "Performance Lab",
+  "settings": {
+    "thread-ttl": 100,
+    "app": "jmeter"
+  },
+  "test-records": [
+    {
+      "type": "naive",
+      "setup": "normal, naive basic/default setup",
+      "optimization": "none",
+      "observation": "increase in latency with number of requests",
+      "stats": {
+        "name": "hikaricp.connections.acquire",
+        "description": "Connection acquire time",
+        "baseUnit": "seconds",
+        "hikari_cp_measurements": [
+          {
+            "statistic": "COUNT",
+            "value": 6130.0
+          },
+          {
+            "statistic": "TOTAL_TIME",
+            "value": 704.321
+          },
+          {
+            "statistic": "MAX",
+            "value": 0.698
+          }
+        ],
+        "results": {
+          "units": "ms",
+          "average": "1348",
+          "median": "1426",
+          "90%_line": "2127",
+          "95%_line": "2218",
+          "99%_line": "2328",
+          "min": "10",
+          "max": "2428"
+        }
+      }
+    },
+    {
+      "type": "eliminate over fetching",
+      "setup": "separate queries to fetch each association",
+      "optimization": "lazy load associations + fetch-joined query",
+      "observation": "not much change, could be because of database architecture",
+      "stats": {
+        "name": "hikaricp.connections.acquire",
+        "description": "Connection acquire time",
+        "baseUnit": "seconds",
+        "hikari_cp_measurements": [
+          {
+            "statistic": "COUNT",
+            "value": 4983.0
+          },
+          {
+            "statistic": "TOTAL_TIME",
+            "value": 779.543
+          },
+          {
+            "statistic": "MAX",
+            "value": 1.376
+          }
+        ],
+        "results": {
+          "units": "ms",
+          "average": "1924",
+          "median": "1914",
+          "90%_line": "2623",
+          "95%_line": "2696",
+          "99%_line": "2854",
+          "min": "431",
+          "max": "2912"
+        }
+      }
+    },
+    {
+      "type": "fetch only required fields ",
+      "setup": "fetch individual queries using @Query over a flat read repository",
+      "optimization": "leveraging JPQL and records to get specific fields from read repo",
+      "observations": "slashed latency by almost half",
+      "stats": {
+        "name": "hikaricp.connections.acquire",
+        "description": "Connection acquire time",
+        "baseUnit": "seconds",
+        "hikari_cp_measurements": [
+          {
+            "statistic": "COUNT",
+            "value": 5005.0
+          },
+          {
+            "statistic": "TOTAL_TIME",
+            "value": 657.239
+          },
+          {
+            "statistic": "MAX",
+            "value": 0.006
+          }
+        ],
+        "results": {
+          "units": "ms",
+          "average": "987",
+          "median": "1004",
+          "90%_line": "1454",
+          "95%_line": "1519",
+          "99%_line": "1624",
+          "min": "122",
+          "max": "1735"
+        }
+      }
+    },
+    {
+      "type": "database index on highly requested fields",
+      "setup": "add index to specific columns",
+      "optimization": "leveraging BTREE index for frequent searches",
+      "observations": "slashed latency by almost 90% compared to initial",
+      "stats": {
+        "name": "hikaricp.connections.acquire",
+        "description": "Connection acquire time",
+        "baseUnit": "seconds",
+        "hikari_cp_measurements": [
+          {
+            "statistic": "COUNT",
+            "value": 150055.0
+          },
+          {
+            "statistic": "TOTAL_TIME",
+            "value": 600.34
+          },
+          {
+            "statistic": "MAX",
+            "value": 0.106
+          }
+        ],
+        "results": {
+          "units": "ms",
+          "average": "89",
+          "median": "75",
+          "90%_line": "192",
+          "95%_line": "248",
+          "99%_line": "369",
+          "min": "1",
+          "max": "713"
+        }
+      }
+    },
+    {
+      "type": "local service cache",
+      "setup": "add caffine service cache",
+      "optimization": "store frequently leveraged api requests instances by id",
+      "observations": "slashed latency by almost 90% compared to initial, capping max times",
+      "stats": {
+        "name": "hikaricp.connections.acquire",
+        "description": "Connection acquire time",
+        "baseUnit": "seconds",
+        "hikari_cp_measurements": [
+          {
+            "statistic": "COUNT",
+            "value": 100015.0
+          },
+          {
+            "statistic": "TOTAL_TIME",
+            "value": 600.34
+          },
+          {
+            "statistic": "MAX",
+            "value": 0.106
+          }
+        ],
+        "results": {
+          "units": "ms",
+          "average": "180",
+          "median": "192",
+          "90%_line": "324",
+          "95%_line": "364",
+          "99%_line": "471",
+          "min": "1",
+          "max": "654"
+        }
+      }
+    }
+
+  ]
+}
